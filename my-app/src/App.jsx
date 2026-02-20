@@ -21,6 +21,7 @@ function App () {
           <Route path='/dashboard' element={<ProtectedRoute><DashBoard /></ProtectedRoute>} />
           <Route path='/donate' element={<DonationForm />} />
           <Route path='/login' element={<Login />} />
+          
           <Route path='/signup' element={<SignUp />} />
         </Routes>
       </div>
