@@ -1,16 +1,34 @@
+import { useLocation, useNavigate } from 'react-router-dom'
 import React from 'react'
 import { useState } from 'react'
 import axios from 'axios'
 import { BASE_URL } from '../../GlobalUrl'
 import { ToastContainer, toast } from 'react-toastify'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../Context/User/UserData'
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' })
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { saveToken , token,setUserData}=useAuth();
+  console.log(token)
 
+  // Login.jsx
+
+const Login = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const from = location.state?.from || '/'
+
+  const handleLoginSuccess = () => {
+    // login logic...
+    navigate(from, { replace: true })
+  }
+
+ 
+}
+
+  
   const fields = [
     { name: 'email', type: 'email', label: 'Email Address' },
     { name: 'password', type: 'password', label: 'Password' }
@@ -23,14 +41,27 @@ const Login = () => {
 
   const handleSubmit = async e => {
     e.preventDefault()
-    if (isSubmitting) return
     setIsSubmitting(true)
     try {
       const response = await axios.post(`${BASE_URL}/login`, formData)
-      login(data.user, data.token)
-      navigate('/dashboard')
+
+      if( response.ok  || response.status ==200 ){
+saveToken(response.data.token)
+setUserData(response.data.result)
+      }
+     
+      await toast.success(
+        response.data.message || 'Login successful'
+      )
+      if (response.data.result.role === 'user') {
+        navigate('/donate')
+      } else {
+        navigate('/adminDashboard')
+      }
     } catch (error) {
-      const msg = error?.response?.data?.message || error?.message || 'Login failed'
+      console.log(error)
+      const msg =
+        error?.response?.data?.message || error?.message || 'Login failed'
       toast.error(msg)
     } finally {
       setIsSubmitting(false)
@@ -403,87 +434,96 @@ const Login = () => {
         }
       `}</style>
 
-      <ToastContainer position="top-right" />
-
-      <div className="lp-root">
-
+      <div className='lp-root'>
         {/* Animated background */}
-        <div className="lp-bg">
-          <div className="lp-bg-grid" />
-          <div className="lp-bg-circle" />
-          <div className="lp-bg-circle" />
-          <div className="lp-bg-circle" />
-          <div className="lp-bg-circle" />
+        <div className='lp-bg'>
+          <div className='lp-bg-grid' />
+          <div className='lp-bg-circle' />
+          <div className='lp-bg-circle' />
+          <div className='lp-bg-circle' />
+          <div className='lp-bg-circle' />
         </div>
 
         {/* Card */}
-        <div className="lp-card">
-
+        <div className='lp-card'>
+          <ToastContainer />
           {/* Logo */}
-          <div className="lp-logo-row">
-            <div className="lp-logo-badge">S</div>
-            <div className="lp-logo-text">
+          <div className='lp-logo-row'>
+            <div className='lp-logo-badge'>S</div>
+            <div className='lp-logo-text'>
               Shravan Singh
               <small>Society</small>
             </div>
           </div>
 
           {/* Heading */}
-          <h1 className="lp-heading">Welcome <span>back.</span></h1>
-          <p className="lp-sub">Sign in to continue to your account</p>
+          <h1 className='lp-heading'>
+            Welcome <span>back.</span>
+          </h1>
+          <p className='lp-sub'>Sign in to continue to your account</p>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="lp-form">
-
+          <form onSubmit={handleSubmit} className='lp-form'>
             {fields.map(field => (
-              <div key={field.name} className="lp-field">
+              <div key={field.name} className='lp-field'>
                 <input
                   id={field.name}
                   type={field.type}
                   name={field.name}
-                  placeholder=" "
+                  placeholder=' '
                   value={formData[field.name]}
                   onChange={handleChange}
                   required
-                  className="lp-input"
-                  autoComplete={field.name === 'email' ? 'email' : 'current-password'}
+                  className='lp-input'
+                  autoComplete={
+                    field.name === 'email' ? 'email' : 'current-password'
+                  }
                 />
-                <label htmlFor={field.name} className="lp-label">
+                <label htmlFor={field.name} className='lp-label'>
                   {field.label}
                 </label>
               </div>
             ))}
 
-            <div className="lp-meta">
-              <a href="/forgot-password" className="lp-forgot">Forgot password?</a>
+            <div className='lp-meta'>
+              <a href='/forgot-password' className='lp-forgot'>
+                Forgot password?
+              </a>
             </div>
 
-            <button type="submit" className="lp-submit" disabled={isSubmitting}>
-              <span className="lp-submit-inner">
-                {isSubmitting && <span className="lp-spinner" />}
+            <button type='submit' className='lp-submit' disabled={isSubmitting}>
+              <span className='lp-submit-inner'>
+                {isSubmitting && <span className='lp-spinner' />}
                 {isSubmitting ? 'Signing in…' : 'Sign In'}
               </span>
             </button>
 
-            <div className="lp-divider">
-              <div className="lp-divider-line" />
-              <span className="lp-divider-text">OR</span>
-              <div className="lp-divider-line" />
+            <div className='lp-divider'>
+              <div className='lp-divider-line' />
+              <span className='lp-divider-text'>OR</span>
+              <div className='lp-divider-line' />
             </div>
 
-            <div className="lp-signup-row">
-              Don't have an account?&nbsp;<a href="/signup">Create one free</a>
+            <div className='lp-signup-row'>
+              Don't have an account?&nbsp;<a href='/signup'>Create one free</a>
             </div>
-
           </form>
 
           {/* Trust row */}
-          <div className="lp-trust">
-            <div className="lp-trust-item"><div className="lp-trust-dot" />Secure Login</div>
-            <div className="lp-trust-item"><div className="lp-trust-dot" />Privacy Protected</div>
-            <div className="lp-trust-item"><div className="lp-trust-dot" />Trusted Platform</div>
+          <div className='lp-trust'>
+            <div className='lp-trust-item'>
+              <div className='lp-trust-dot' />
+              Secure Login
+            </div>
+            <div className='lp-trust-item'>
+              <div className='lp-trust-dot' />
+              Privacy Protected
+            </div>
+            <div className='lp-trust-item'>
+              <div className='lp-trust-dot' />
+              Trusted Platform
+            </div>
           </div>
-
         </div>
       </div>
     </>

@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
+import { useAuth } from '../../Context/User/UserData'
 
-export default function NavBar() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function NavBar () {
+  const [isOpen, setIsOpen] = useState(false)
 
-  const navLinks = ['Home', 'About', 'Campaigns', 'Donate'];
+  // Make sure useAuth actually returns token, user, logout
+  const { token, user, logout } = useAuth()
+  console.log(user)
+
+  const navLinks = ['Home', 'About', 'Campaigns', 'Donate']
 
   return (
     <>
+      {/* MOVE THIS CSS TO YOUR GLOBAL CSS/INDEX.CSS OR A SEPARATE FILE */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
-
         :root {
           --crimson: #C0162C;
           --crimson-dark: #8B0E1E;
@@ -41,7 +45,6 @@ export default function NavBar() {
           height: 70px;
         }
 
-        /* Logo */
         .navbar-logo {
           display: flex;
           align-items: center;
@@ -84,7 +87,6 @@ export default function NavBar() {
           color: var(--text-muted);
         }
 
-        /* Desktop Nav Links */
         .navbar-links {
           display: flex;
           align-items: center;
@@ -132,7 +134,6 @@ export default function NavBar() {
           transform: translateX(-50%) scaleX(1);
         }
 
-        /* CTA Buttons */
         .navbar-cta {
           display: flex;
           align-items: center;
@@ -154,6 +155,7 @@ export default function NavBar() {
           border-radius: 6px;
           border: 1.5px solid var(--border);
           transition: all 0.2s ease;
+          background: transparent;
         }
 
         .btn-login:hover {
@@ -172,6 +174,7 @@ export default function NavBar() {
           border-radius: 6px;
           transition: all 0.22s ease;
           box-shadow: 0 2px 8px rgba(192, 22, 44, 0.2);
+          border: none;
         }
 
         .btn-signup:hover {
@@ -180,7 +183,6 @@ export default function NavBar() {
           box-shadow: 0 4px 14px rgba(192, 22, 44, 0.3);
         }
 
-        /* Hamburger */
         .hamburger {
           display: none;
           flex-direction: column;
@@ -226,7 +228,6 @@ export default function NavBar() {
           transform: translateY(-7px) rotate(-45deg);
         }
 
-        /* Mobile Menu */
         .mobile-menu {
           overflow: hidden;
           max-height: 0;
@@ -289,6 +290,7 @@ export default function NavBar() {
           border-radius: 6px;
           border: 1.5px solid var(--border);
           transition: all 0.2s ease;
+          background: transparent;
         }
 
         .mobile-btn-signup {
@@ -302,71 +304,122 @@ export default function NavBar() {
           padding: 0.65rem;
           border-radius: 6px;
           transition: all 0.2s ease;
+          border: none;
         }
 
         .mobile-btn-login:hover { background: var(--off-white); border-color: rgba(0,0,0,0.2); }
         .mobile-btn-signup:hover { background: var(--crimson-dark); }
       `}</style>
 
-      <nav className="navbar-root" role="navigation" aria-label="Main navigation">
-        <div className="navbar-inner">
-
-          {/* Logo */}
-          <a href="/" className="navbar-logo">
-            <div className="navbar-logo-icon">S</div>
-            <div className="navbar-logo-text">
+      <nav
+        className='navbar-root'
+        role='navigation'
+        aria-label='Main navigation'
+      >
+        <div className='navbar-inner'>
+          <a href='/' className='navbar-logo'>
+            <div className='navbar-logo-icon'>S</div>
+            <div className='navbar-logo-text'>
               Shravan Singh
               <span>Society</span>
             </div>
           </a>
 
-          {/* Desktop Links */}
-          <ul className="navbar-links" aria-label="Primary navigation">
+          <ul className='navbar-links' aria-label='Primary navigation'>
             {navLinks.map(link => (
               <li key={link}>
-                    <a href={`/${link.toLowerCase()}`} className="nav-link">
-                      {link}
-                    </a>
+                <a href={`/${link.toLowerCase()}`} className='nav-link'>
+                  {link}
+                </a>
               </li>
             ))}
           </ul>
 
-          {/* Desktop CTAs */}
-          <div className="navbar-cta">
-            <a href="/login" className="btn-login">Login</a>
-            <a href="/signup" className="btn-signup">Sign Up</a>
-          </div>
+          {!token ? (
+            <div className='navbar-cta'>
+              <a href='/login' className='btn-login'>
+                Login
+              </a>
+              <a href='/signup' className='btn-signup'>
+                Sign Up
+              </a>
+            </div>
+          ) : (
+            <div className='navbar-cta'>
+              <span style={{ marginRight: '1rem', fontWeight: 500 }}>
+                Hi, {user?.username || user?.name || 'User'}
+              </span>
+              <button
+                className='btn-login'
+                onClick={logout}
+                style={{ cursor: 'pointer' }}
+              >
+                Logout
+              </button>
+            </div>
+          )}
 
-          {/* Mobile Hamburger */}
           <button
             className={`hamburger${isOpen ? ' open' : ''}`}
             onClick={() => setIsOpen(!isOpen)}
             aria-expanded={isOpen}
-            aria-controls="mobile-menu"
-            aria-label="Toggle menu"
+            aria-controls='mobile-menu'
+            aria-label='Toggle menu'
           >
-            <span className="hamburger-bar" />
-            <span className="hamburger-bar" />
-            <span className="hamburger-bar" />
+            <span className='hamburger-bar' />
+            <span className='hamburger-bar' />
+            <span className='hamburger-bar' />
           </button>
         </div>
 
-        {/* Mobile Menu */}
-        <div id="mobile-menu" className={`mobile-menu${isOpen ? ' open' : ''}`}>
-          <div className="mobile-menu-inner">
+        <div
+          id='mobile-menu'
+          className={`mobile-menu${isOpen ? ' open' : ''}`}
+        >
+          <div className='mobile-menu-inner'>
             {navLinks.map(link => (
-              <a key={link} href={`/${link.toLowerCase()}`} className="mobile-nav-link">
+              <a
+                key={link}
+                href={`/${link.toLowerCase()}`}
+                className='mobile-nav-link'
+              >
                 {link}
               </a>
             ))}
-            <div className="mobile-nav-divider" />
-            <div className="mobile-cta-group">
-              <a href="/login" className="mobile-btn-login">Login</a>
-              <a href="/signup" className="mobile-btn-signup">Sign Up</a>
-            </div>
+            <div className='mobile-nav-divider' />
+            {!token ? (
+              <div className='mobile-cta-group'>
+                <a href='/login' className='mobile-btn-login'>
+                  Login
+                </a>
+                <a href='/signup' className='mobile-btn-signup'>
+                  Sign Up
+                </a>
+              </div>
+            ) : (
+              <div className='mobile-cta-group'>
+                <span
+                  style={{
+                    flex: 1,
+                    textAlign: 'center',
+                    fontWeight: 500,
+                    alignSelf: 'center'
+                  }}
+                >
+                  Hi, {user?.username || user?.name || 'User'}
+                </span>
+                <button
+                  className='mobile-btn-login'
+                  onClick={logout}
+                  style={{ flex: 1, cursor: 'pointer' }}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </nav>
     </>
-  );
+  )
 }

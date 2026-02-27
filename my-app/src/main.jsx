@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
-import { AuthProvider } from '../src/Components/Context/User/UserData.jsx'
+import  AuthProvider  from './Components/Context/User/UserData.jsx'
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 
 const theme = createTheme({

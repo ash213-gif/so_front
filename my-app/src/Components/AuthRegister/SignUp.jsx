@@ -1,33 +1,86 @@
-import React from "react";
-import { useState } from "react";
+import React from 'react'
+import { toast, ToastContainer } from 'react-toastify'
+import { BASE_URL } from '../../GlobalUrl.js'
+import { useState } from 'react'
+import { useAuth } from '../Context/User/UserData.jsx'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const SignUp = () => {
-	const [formData, setFormData] = useState({
-		username: '',
-		email: '',
-		password: '',
-	});
+  const navigate = useNavigate()
+  const { setUserData } = useAuth()
 
-	const fields = [
-		{ name: 'username', type: 'text', placeholder: 'Enter username', label: 'Username' },
-		{ name: 'email', type: 'email', placeholder: 'Enter email', label: 'Email Address' },
-		{ name: 'password', type: 'password', placeholder: 'Enter password', label: 'Password' },
-	];
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: ''
+  })
 
-	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setFormData({ ...formData, [name]: value });
-	};
+  const [loading, setloading] = useState(false)
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		console.log(formData);
-		// Add signup logic here
-	};
+  const fields = [
+    {
+      name: 'username',
+      type: 'text',
+      placeholder: 'Enter username',
+      label: 'Username',
+      autoComplete: 'username'
+    },
+    {
+      name: 'email',
+      type: 'email',
+      placeholder: 'Enter email',
+      label: 'Email Address',
+      autoComplete: 'email'
+    },
+    {
+      name: 'password',
+      type: 'password',
+      placeholder: 'Enter password',
+      label: 'Password',
+      autoComplete: 'new-password'
+    }
+  ]
 
-	return (
-		<>
-			<style>{`
+  const handleChange = e => {
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+  }
+
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setloading(true)
+    try {
+      const response = await axios.post(`${BASE_URL}/signup`, formData)
+      const data = response.data
+
+      if (data.result?._id) {
+        const id = data.result._id
+
+        navigate(`/${id}/otpverify`, { state: { email: formData.email } })
+
+        // yahan actual user object kya hai, usko check karo
+        // tumne likha hai: data.result.data, shayad data.result hi user ho
+        setUserData(data.result)
+
+        setFormData({ username: '', email: '', password: '' })
+      } else {
+        toast.error(
+          data.message || 'Failed to create account. Please try again.'
+        )
+      }
+    } catch (err) {
+      console.log(err)
+      const msg = err.response?.data?.message || 'Something went wrong. Please try again.'
+      toast.error(msg)
+    } finally {
+      setloading(false)
+    }
+  }
+
+  return (
+    <>
+      <style>{`
 				@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 				*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -349,78 +402,86 @@ const SignUp = () => {
 				}
 			`}</style>
 
-			<div className="sp-root">
+      <div className='sp-root'>
+        {/* Animated background */}
+        <div className='sp-bg'>
+          <div className='sp-bg-grid' />
+          <div className='sp-bg-circle' />
+          <div className='sp-bg-circle' />
+          <div className='sp-bg-circle' />
+          <div className='sp-bg-circle' />
+        </div>
 
-				{/* Animated background */}
-				<div className="sp-bg">
-					<div className="sp-bg-grid" />
-					<div className="sp-bg-circle" />
-					<div className="sp-bg-circle" />
-					<div className="sp-bg-circle" />
-					<div className="sp-bg-circle" />
-				</div>
+        {/* Card */}
+        <div className='sp-card'>
+          {/* Logo */}
+          <div className='sp-logo-row'>
+            <div className='sp-logo-badge'>S</div>
+            <div className='sp-logo-text'>
+              Shravan Singh
+              <small>Society</small>
+            </div>
+          </div>
 
-				{/* Card */}
-				<div className="sp-card">
+          {/* Heading */}
+          <h1 className='sp-heading'>
+            Create your <span>account.</span>
+          </h1>
+          <p className='sp-sub'>Join us and be part of something meaningful</p>
 
-					{/* Logo */}
-					<div className="sp-logo-row">
-						<div className="sp-logo-badge">S</div>
-						<div className="sp-logo-text">
-							Shravan Singh
-							<small>Society</small>
-						</div>
-					</div>
+          {/* Form — logic untouched */}
+          <form onSubmit={handleSubmit} className='sp-form'>
+            {fields.map(field => (
+              <div key={field.name} className='sp-field'>
+                <input
+                  type={field.type}
+                  name={field.name}
+                  placeholder=' '
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                  required
+                  className='sp-input'
+                  autoComplete={field.autoComplete}
+                />
+                <label className='sp-label'>{field.label}</label>
+              </div>
+            ))}
 
-					{/* Heading */}
-					<h1 className="sp-heading">Create your <span>account.</span></h1>
-					<p className="sp-sub">Join us and be part of something meaningful</p>
+            <button disabled={loading} type='submit' className='sp-submit'>
+              {loading ? 'Creating Account...' : 'Sign Up'}
+            </button>
 
-					{/* Form — logic untouched */}
-					<form onSubmit={handleSubmit} className="sp-form">
+            <div className='sp-divider'>
+              <div className='sp-divider-line' />
+              <span className='sp-divider-text'>OR</span>
+              <div className='sp-divider-line' />
+            </div>
 
-						{fields.map((field) => (
-							<div key={field.name} className="sp-field">
-								<input
-									type={field.type}
-									name={field.name}
-									placeholder=" "
-									value={formData[field.name]}
-									onChange={handleChange}
-									required
-									className="sp-input"
-								/>
-								<label className="sp-label">{field.label}</label>
-							</div>
-						))}
+            <div className='sp-login-row'>
+              Already have an account?&nbsp;<a href='/login'>Sign in</a>
+            </div>
+          </form>
 
-						<button type="submit" className="sp-submit">
-							Create Account
-						</button>
+          {/* Trust row */}
+          <div className='sp-trust'>
+            <div className='sp-trust-item'>
+              <div className='sp-trust-dot' />
+              Free to Join
+            </div>
+            <div className='sp-trust-item'>
+              <div className='sp-trust-dot' />
+              Privacy Protected
+            </div>
+            <div className='sp-trust-item'>
+              <div className='sp-trust-dot' />
+              Trusted Platform
+            </div>
+          </div>
+        </div>
+      </div>
+      <ToastContainer />
+    </>
+  )
+}
 
-						<div className="sp-divider">
-							<div className="sp-divider-line" />
-							<span className="sp-divider-text">OR</span>
-							<div className="sp-divider-line" />
-						</div>
-
-						<div className="sp-login-row">
-							Already have an account?&nbsp;<a href="/login">Sign in</a>
-						</div>
-
-					</form>
-
-					{/* Trust row */}
-					<div className="sp-trust">
-						<div className="sp-trust-item"><div className="sp-trust-dot" />Free to Join</div>
-						<div className="sp-trust-item"><div className="sp-trust-dot" />Privacy Protected</div>
-						<div className="sp-trust-item"><div className="sp-trust-dot" />Trusted Platform</div>
-					</div>
-
-				</div>
-			</div>
-		</>
-	);
-};
-
-export default SignUp;
+export default SignUp
