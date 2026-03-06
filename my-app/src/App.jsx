@@ -16,6 +16,7 @@ import Donations from './Components/Home/Admin/Dashboard/Donations'
 import Donate from './Components/Home/Admin/Dashboard/Donate'
 import Campaign from './Components/Home/Admin/Dashboard/Campaign'
 import About from './Components/Home/Both/About'
+import Campaignn from './Components/Home/Both/Campaignn'
 
 import './App.css'
 
@@ -25,22 +26,22 @@ function App () {
       <NavBar />
 
       <Routes>
+
+
+        {/* Authentication   routess */}
+        <Route path='/login' element={<Login />} />
+        <Route path='/signup' element={<SignUp />} />
+        <Route path='/:id/otpverify' element={<Otpverify />} />
+
+
+        {/* USER ROUTESS  */}
         <Route path='/' element={<Home />} />
         <Route path='/about' element={<About />} />
-        <Route
-          path='/userDashboard'
-          element={
-            <ProtectedRoute>
-              <DashBoard />
-            </ProtectedRoute>
-
-          }
-        />
+        <Route path='/campaigns' element={<Campaignn />} />
         <Route path='/donate' element={<Main />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/otpverify' element={<Otpverify />} />
-        <Route path='/:id/otpverify' element={<Otpverify />} />
-        <Route path='/signup' element={<SignUp />} />
+        <Route path='/userDashboard'element={ <ProtectedRoute><DashBoard /></ProtectedRoute>}/>
+      
+
         {/* Admin Routes */}
         <Route path='/adminDashboard/*' element={<AdminJoin />}>
           <Route index element={<AdminDash />} />
@@ -48,6 +49,8 @@ function App () {
           <Route path='donations' element={<Donations />} />
           <Route path='campaign' element={<Campaign />} />
         </Route>
+
+
       </Routes>
 
       <Footer />

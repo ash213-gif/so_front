@@ -1,0 +1,140 @@
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+  background: linear-gradient(to bottom, #fafafa, #ffffff);
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  color: #111;
+  margin-bottom: 3rem;
+  text-align: center;
+  font-weight: 700;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  width: 60px;
+  height: 3px;
+  background: #C0162C;
+  display: block;
+  margin: 0.8rem auto 0;
+  border-radius: 2px;
+}
+
+.campaign-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2.5rem;
+}
+
+.campaign-card {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+.campaign-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.card-image-wrapper {
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.campaign-card:hover .card-image {
+  transform: scale(1.08);
+}
+
+.card-content {
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 0.8rem;
+}
+
+.card-desc {
+  font-size: 0.95rem;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+/* 🔥 Donation Progress Bar */
+.progress-bar {
+  height: 8px;
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #C0162C, #ff4d5a);
+  width: 60%; /* dynamically change */
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+.card-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.2rem;
+  border-top: 1px solid #f1f1f1;
+}
+
+.card-location {
+  font-size: 0.85rem;
+  color: #777;
+  font-weight: 500;
+}
+
+.donate-btn {
+  background: linear-gradient(135deg, #C0162C, #a31224);
+  color: white;
+  border: none;
+  padding: 0.65rem 1.3rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.donate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(192, 22, 44, 0.3);
+}
+
+
+
+

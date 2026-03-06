@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
+import GetCampaignProvider from './Components/Context/User/Getcampaign.jsx'
 import  AuthProvider  from './Components/Context/User/UserData.jsx'
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 
@@ -18,9 +19,12 @@ createRoot(document.getElementById('root')).render(
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
+      <GetCampaignProvider>
+
         <AuthProvider>
           <App />
         </AuthProvider>
+      </GetCampaignProvider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>

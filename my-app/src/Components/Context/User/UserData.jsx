@@ -13,6 +13,8 @@ export function useAuth() {
   const [user, setUser] = useState(null);      // user details
   const [token, setToken] = useState(null);    // auth token
   const [loading, setLoading] = useState(true); // app start pe loading
+const [ transaction,settransaction ]=useState(null)
+
 
   useEffect(() => {
     // app refresh hone pe localStorage se data load
@@ -28,6 +30,10 @@ export function useAuth() {
 
     setLoading(false);
   }, []);
+
+  const summary=(summaryData)=>{
+settransaction(summaryData)
+  }
 
   const setUserData = (userData) => {
     setUser(userData);
@@ -48,7 +54,7 @@ export function useAuth() {
     navigate('/')
   };
   
-  const value = { user, token, loading, setUserData, saveToken, logout };
+  const value = { user,summary ,token, loading, setUserData, saveToken, logout };
 
   return (
   <AuthContext.Provider value={value}>
