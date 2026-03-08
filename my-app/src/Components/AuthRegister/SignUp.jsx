@@ -56,11 +56,7 @@ const SignUp = () => {
 
       if (data.result?._id) {
         const id = data.result._id
-
         navigate(`/${id}/otpverify`, { state: { email: formData.email } })
-
-        // yahan actual user object kya hai, usko check karo
-        // tumne likha hai: data.result.data, shayad data.result hi user ho
         setUserData(data.result)
 
         setFormData({ username: '', email: '', password: '' })

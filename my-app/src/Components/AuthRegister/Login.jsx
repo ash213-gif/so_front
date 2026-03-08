@@ -8,7 +8,7 @@ import { useAuth } from '../Context/User/UserData'
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [forverifydata, setverifydata] = useState(null)
+  // const [forverifydata, setverifydata] = useState(null)
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -52,25 +52,25 @@ const Login = () => {
       const status = error?.response?.status
 
       // handle 403 from backend (blocked or not verified)
-      if (status === 403) {
-        setverifydata(error.response.data)
+      // if (status === 403) {
+      //   setverifydata(error.response.data)
 
-        const message = error.response.data?.message || ''
+      //   const message = error.response.data?.message || ''
 
-        // if not verified, go to OTP verify page (frontend route)
-        if (message.toLowerCase().includes('not verified')) {
-          // if your backend sends user id in error.response.data.userId, use that
-          const userId = error.response.data?.userId
-          if (userId) {
-            navigate(`/verify/${userId}`, {
-              state: { email: formData.email }
-            })
-          } else {
-            // fallback: simple verify page with just email
-            navigate('/verify', { state: { email: formData.email } })
-          }
-        }
-      }
+      //   // if not verified, go to OTP verify page (frontend route)
+      //   if (message.toLowerCase().includes('not verified')) {
+      //     // if your backend sends user id in error.response.data.userId, use that
+      //     const userId = error.response.data?.userId
+      //     if (userId) {
+      //       navigate(`/verify/${userId}`, {
+      //         state: { email: formData.email }
+      //       })
+      //     } else {
+      //       // fallback: simple verify page with just email
+      //       navigate('/verify', { state: { email: formData.email } })
+      //     }
+      //   }
+      // }
 
       const msg =
         error?.response?.data?.message || error?.message || 'Login failed'
