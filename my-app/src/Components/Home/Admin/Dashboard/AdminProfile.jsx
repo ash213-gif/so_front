@@ -1,6 +1,18 @@
 import React from "react";
+import { useAuths } from "../../../Context/Admin/Summary";
+import { useAuth } from "../../../Context/User/UserData";
+import { useNavigate } from "react-router-dom";
+import { useEffect ,useState} from "react";
+import axios from "axios";
+import { BASE_URL } from "../../../../GlobalUrl";
+import { socket } from "../../../../Socket";
 
 const AdminProfile = () => {
+ 
+  const navigate = useNavigate();
+  const { user } = useAuth();
+const{ totalsummary }=useAuths()
+
   return (
     <>
       <style>{`
@@ -217,7 +229,7 @@ const AdminProfile = () => {
         <div className="ap-body">
           <div className="ap-top">
             <div>
-              <div className="ap-name">Amit Verma</div>
+              <div className="ap-name">{user?.username}</div>
               <div className="ap-role">Super Administrator • Full Access</div>
             </div>
 
@@ -229,19 +241,19 @@ const AdminProfile = () => {
 
           <div className="ap-stats">
             <div className="ap-stat-card">
-              <strong>128</strong>
+              <strong>{totalsummary?.totalUsers}</strong>
               <span>Total Users</span>
             </div>
             <div className="ap-stat-card">
-              <strong>24</strong>
+              <strong>{totalsummary?.totalCampaigns}</strong>
               <span>Active Campaigns</span>
             </div>
             <div className="ap-stat-card">
-              <strong>₹8.2L</strong>
+              <strong>₹{totalsummary?.totalDonationAmount}</strong>
               <span>Funds Managed</span>
             </div>
             <div className="ap-stat-card">
-              <strong>5</strong>
+              <strong>{totalsummary?.totalTeamMembers}</strong>
               <span>Team Members</span>
             </div>
           </div>
@@ -249,7 +261,7 @@ const AdminProfile = () => {
           <div className="ap-info">
             <div>
               <h4>Contact Information</h4>
-              <p>Email: amit.verma@example.com</p>
+              <p>Email: {user?.email}</p>
               <p>Phone: +91 98765 43210</p>
             </div>
 

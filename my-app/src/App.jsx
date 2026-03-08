@@ -12,11 +12,13 @@ import AdminJoin from './Components/Home/Admin/Dashboard/AdminJoin'
 import AdminDash from './Components/Home/Admin/Dashboard/AdminDash'
 import Otpverify from './Components/AuthRegister/Otpverify'
 import Users from './Components/Home/Admin/Dashboard/Users'
-import Donations from './Components/Home/Admin/Dashboard/Donations'
 import Donate from './Components/Home/Admin/Dashboard/Donate'
 import Campaign from './Components/Home/Admin/Dashboard/Campaign'
 import About from './Components/Home/Both/About'
 import Campaignn from './Components/Home/Both/Campaignn'
+import AdminProfile from './Components/Home/Admin/Dashboard/AdminProfile'
+import { ToastContainer } from 'react-toastify';
+import Analytics from './Components/Home/Admin/Dashboard/Analytics'
 
 import './App.css'
 
@@ -46,8 +48,9 @@ function App () {
         <Route path='/adminDashboard/*' element={<AdminJoin />}>
           <Route index element={<AdminDash />} />
           <Route path='users' element={<Users />} />
-          <Route path='donations' element={<Donations />} />
           <Route path='campaign' element={<Campaign />} />
+          <Route path='analytics' element={<Analytics />} />
+          <Route path='profile' element={<AdminProfile />} />
         </Route>
 
 

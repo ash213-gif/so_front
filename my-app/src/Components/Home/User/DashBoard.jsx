@@ -3,6 +3,10 @@ import "../User/user.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../Components/Context/User/UserData";
 import { BASE_URL}from '../../../GlobalUrl'
+import axios from "axios";
+import { socket } from "../../../Socket";
+import { ToastContainer, toast } from 'react-toastify'
+
 
 
 // Dummy notifications config
@@ -40,26 +44,7 @@ const notifications = [
 ];
 
 // Initial static activities (later tum API se real donation history daal sakte ho)
-const initialActivities = [
-  {
-    dot: "dot-green",
-    title: "Donated ₹5,000",
-    sub: "Clean Water Initiative",
-    time: "2h ago",
-  },
-  {
-    dot: "dot-red",
-    title: "Joined Campaign",
-    sub: '"Education for All"',
-    time: "1d ago",
-  },
-  {
-    dot: "dot-amber",
-    title: "Profile Updated",
-    sub: "Changed profile photo",
-    time: "3d ago",
-  },
-];
+
 
 // Left nav items
 const navItems = [
@@ -71,7 +56,7 @@ const navItems = [
 ];
 
 export default function UserProfile() {
-  const { user ,transaction ,summary} = useAuth();
+  const { user ,transaction ,summary, logout} = useAuth();
   const navigate = useNavigate();
   const id = user?._id;
 
@@ -110,25 +95,55 @@ export default function UserProfile() {
     }, {})
   );
 
-  const [activities, setActivities] = useState(initialActivities);
+  const [activities, setActivities] = useState([]);
+  
 
   // Fetch transaction summary (and later you can also fetch full history)
-  useEffect(() => {
-    if (!id) return;
-    const fetchSummary = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}/transactionsummary/${id}`);
-        const data = await res.json();
-        summary(data); 
-        console.log(transaction)
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchSummary();
-  }, [id, summary]);
+ useEffect(() => {
+  if (!id) return;
 
+  const fetchSummary = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/transactionsummary/${id}`);
+
+      summary(res.data);
+
+      setActivities(res.data?.history || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchSummary();
+
+}, [id]);
+
+
+useEffect(() => {
+
+  const handleTransaction = (data) => {
+    if (data.userId === id) {
+      setActivities((prev) => [data, ...(prev || [])]);
+    }
+  };
+
+  socket.on("transactionUpdated", handleTransaction);
+
+  return () => {
+    socket.off("transactionUpdated", handleTransaction);
+  };
+
+}, [id]);
+
+  const handelUpdate=async(req,res)=>{
+    try{
+const res= await axios.put(`${BASE_URL}/updatedUser/${id}`,{
   
+})
+    }catch{
+
+    }
+  }
 
   const toggleEdit = (section) => {
     setEditing((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -136,6 +151,38 @@ export default function UserProfile() {
 
   const handleToggle = (id) => {
     setToggles((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleDeactivateAccount = async () => {
+    if (window.confirm("Are you sure you want to deactivate your account? You can reactivate it by logging back in.")) {
+      try {
+        await axios.put(`${BASE_URL}/deactivate/${id}`);
+        toast.success("Your account has been deactivated.");
+        if (logout) {
+          logout();
+        }
+        navigate('/login');
+      } catch (err) {
+        console.error("Deactivation failed", err);
+        toast.err("Could not deactivate your account. Please try again.");
+      }
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
+      try {
+        await axios.delete(`${BASE_URL}/delete/${id}`);
+        toast.success("Your account has been permanently deleted.");
+        if (logout) {
+          logout();
+        }
+        navigate('/register'); // Or your signup/home page
+      } catch (err) {
+        console.error("Deletion failed", err);
+        toast.err("Could not delete your account. Please try again.");
+      }
+    }
   };
 
   return (
@@ -174,11 +221,11 @@ export default function UserProfile() {
 
               <div className="prof-mini-stats">
                 <div className="prof-mini-stat">
-                  <strong>₹45K</strong>
+                  <strong>{transaction.totalAmount}</strong>
                   <span>Donated</span>
                 </div>
                 <div className="prof-mini-stat">
-                  <strong>12</strong>
+                  <strong>{transaction.totalTimes}</strong>
                   <span>Campaigns</span>
                 </div>
                 <div className="prof-mini-stat">
@@ -520,12 +567,12 @@ export default function UserProfile() {
                   <div className="prof-activity-list">
                     {activities.map((a, i) => (
                       <div className="prof-activity-item" key={i}>
-                        <span className={`prof-act-dot ${a.dot}`} />
+                        <span className={`prof-act-dot ${a.amount}`} />
                         <div className="prof-act-info">
-                          <strong>{a.title}</strong>
-                          <span>{a.sub}</span>
+                          <span> amount: {a.amount}</span>
+                          <strong>{a.transactionId}</strong>
                         </div>
-                        <span className="prof-act-time">{a.time}</span>
+                        <span className="prof-act-time">{a.updatedAt}</span>
                       </div>
                     ))}
                   </div>
@@ -648,6 +695,7 @@ export default function UserProfile() {
                       <button
                         className="prof-danger-btn"
                         style={{ background: "#f59e0b" }}
+                        onClick={handleDeactivateAccount}
                       >
                         Deactivate
                       </button>
@@ -660,7 +708,7 @@ export default function UserProfile() {
                           data. This cannot be undone.
                         </div>
                       </div>
-                      <button className="prof-danger-btn">Delete</button>
+                      <button className="prof-danger-btn" onClick={handleDeleteAccount}>Delete</button>
                     </div>
                   </div>
                 </div>

@@ -13,7 +13,11 @@ export function useAuth() {
   const [user, setUser] = useState(null);      // user details
   const [token, setToken] = useState(null);    // auth token
   const [loading, setLoading] = useState(true); // app start pe loading
-const [ transaction,settransaction ]=useState(null)
+const [transaction, settransaction] = useState({
+  totalAmount: 0,
+  totalTimes: 0,
+  history: []
+});
 
 
   useEffect(() => {
@@ -31,9 +35,13 @@ const [ transaction,settransaction ]=useState(null)
     setLoading(false);
   }, []);
 
-  const summary=(summaryData)=>{
-settransaction(summaryData)
-  }
+ const summary = (summaryData) => {
+  settransaction(summaryData || {
+    totalAmount: 0,
+    totalTimes: 0,
+    history: []
+  });
+};
 
   const setUserData = (userData) => {
     setUser(userData);
@@ -54,7 +62,7 @@ settransaction(summaryData)
     navigate('/')
   };
   
-  const value = { user,summary ,token, loading, setUserData, saveToken, logout };
+  const value = { user,summary , transaction,token,  loading, setUserData, saveToken, logout };
 
   return (
   <AuthContext.Provider value={value}>

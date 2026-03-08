@@ -1,6 +1,5 @@
+import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import React from 'react'
-import { useState } from 'react'
 import axios from 'axios'
 import { BASE_URL } from '../../GlobalUrl'
 import { ToastContainer, toast } from 'react-toastify'
@@ -8,27 +7,15 @@ import { useAuth } from '../Context/User/UserData'
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' })
-  const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { saveToken , token,setUserData}=useAuth();
-  console.log(token)
+  const [forverifydata, setverifydata] = useState(null)
 
-  // Login.jsx
-
-const Login = () => {
-  const location = useLocation()
   const navigate = useNavigate()
+  const location = useLocation()
   const from = location.state?.from || '/'
 
-  const handleLoginSuccess = () => {
-    // login logic...
-    navigate(from, { replace: true })
-  }
+  const { saveToken, token, setUserData } = useAuth()
 
- 
-}
-
-  
   const fields = [
     { name: 'email', type: 'email', label: 'Email Address' },
     { name: 'password', type: 'password', label: 'Password' }
@@ -36,7 +23,7 @@ const Login = () => {
 
   const handleChange = e => {
     const { name, value } = e.target
-    setFormData({ ...formData, [name]: value })
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = async e => {
@@ -45,14 +32,15 @@ const Login = () => {
     try {
       const response = await axios.post(`${BASE_URL}/login`, formData)
 
-      if( response.ok  || response.status ==200 ){
-saveToken(response.data.token)
-setUserData(response.data.result)
-      }
-     
-      await toast.success(
-        response.data.message || 'Login successful'
-      )
+      // success – axios only comes here for 2xx
+      saveToken(response.data.token)
+      setUserData(response.data.result)
+
+      toast.success(response.data.message || 'Login successful')
+
+      // optional protected-route redirect
+      // navigate(from, { replace: true })
+
       if (response.data.result.role === 'user') {
         navigate('/donate')
       } else {
@@ -60,6 +48,30 @@ setUserData(response.data.result)
       }
     } catch (error) {
       console.log(error)
+
+      const status = error?.response?.status
+
+      // handle 403 from backend (blocked or not verified)
+      if (status === 403) {
+        setverifydata(error.response.data)
+
+        const message = error.response.data?.message || ''
+
+        // if not verified, go to OTP verify page (frontend route)
+        if (message.toLowerCase().includes('not verified')) {
+          // if your backend sends user id in error.response.data.userId, use that
+          const userId = error.response.data?.userId
+          if (userId) {
+            navigate(`/verify/${userId}`, {
+              state: { email: formData.email }
+            })
+          } else {
+            // fallback: simple verify page with just email
+            navigate('/verify', { state: { email: formData.email } })
+          }
+        }
+      }
+
       const msg =
         error?.response?.data?.message || error?.message || 'Login failed'
       toast.error(msg)
@@ -70,11 +82,10 @@ setUserData(response.data.result)
 
   return (
     <>
+      {/* your CSS and JSX exactly as before */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
-
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         .lp-root {
           min-height: 100vh;
           display: flex;
@@ -85,8 +96,6 @@ setUserData(response.data.result)
           position: relative;
           overflow: hidden;
         }
-
-        /* ── Animated Background ── */
         .lp-bg {
           position: fixed;
           inset: 0;
@@ -94,14 +103,12 @@ setUserData(response.data.result)
           background: #fff;
           overflow: hidden;
         }
-
         .lp-bg-circle {
           position: absolute;
           border-radius: 50%;
           animation: floatCircle linear infinite;
           opacity: 0;
         }
-
         .lp-bg-circle:nth-child(1) {
           width: 500px; height: 500px;
           background: radial-gradient(circle, rgba(192,22,44,0.08) 0%, transparent 70%);
@@ -126,7 +133,6 @@ setUserData(response.data.result)
           top: 20%; right: 25%;
           animation-duration: 20s; animation-delay: -4s;
         }
-
         @keyframes floatCircle {
           0%   { transform: translate(0, 0) scale(1);   opacity: 0; }
           10%  { opacity: 1; }
@@ -134,8 +140,6 @@ setUserData(response.data.result)
           90%  { opacity: 1; }
           100% { transform: translate(0, 0) scale(1);   opacity: 0; }
         }
-
-        /* Subtle grid overlay */
         .lp-bg-grid {
           position: absolute;
           inset: 0;
@@ -144,8 +148,6 @@ setUserData(response.data.result)
             linear-gradient(90deg, rgba(192,22,44,0.04) 1px, transparent 1px);
           background-size: 48px 48px;
         }
-
-        /* ── Card ── */
         .lp-card {
           position: relative;
           z-index: 1;
@@ -162,20 +164,16 @@ setUserData(response.data.result)
           padding: 2.75rem 2.5rem 2.5rem;
           animation: cardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
-
         @keyframes cardIn {
           from { opacity: 0; transform: translateY(32px) scale(0.97); }
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
-
-        /* ── Header ── */
         .lp-logo-row {
           display: flex;
           align-items: center;
           gap: 10px;
           margin-bottom: 2rem;
         }
-
         .lp-logo-badge {
           width: 42px; height: 42px;
           background: #C0162C;
@@ -190,7 +188,6 @@ setUserData(response.data.result)
           flex-shrink: 0;
           box-shadow: 0 4px 12px rgba(192,22,44,0.3);
         }
-
         .lp-logo-text {
           font-family: 'Cormorant Garamond', serif;
           font-size: 1.05rem;
@@ -198,7 +195,6 @@ setUserData(response.data.result)
           color: #1a1a1a;
           line-height: 1.2;
         }
-
         .lp-logo-text small {
           display: block;
           font-family: 'DM Sans', sans-serif;
@@ -208,7 +204,6 @@ setUserData(response.data.result)
           text-transform: uppercase;
           color: rgba(0,0,0,0.38);
         }
-
         .lp-heading {
           font-family: 'Cormorant Garamond', serif;
           font-size: 2rem;
@@ -218,29 +213,23 @@ setUserData(response.data.result)
           line-height: 1.15;
           margin-bottom: 0.35rem;
         }
-
         .lp-heading span {
           color: #C0162C;
         }
-
         .lp-sub {
           font-size: 0.85rem;
           color: rgba(0,0,0,0.4);
           margin-bottom: 2rem;
           font-weight: 400;
         }
-
-        /* ── Floating Label Inputs ── */
         .lp-form {
           display: flex;
           flex-direction: column;
           gap: 1.4rem;
         }
-
         .lp-field {
           position: relative;
         }
-
         .lp-input {
           width: 100%;
           height: 56px;
@@ -256,13 +245,11 @@ setUserData(response.data.result)
           transition: border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
           appearance: none;
         }
-
         .lp-input:focus {
           background: #fff;
           border-color: #C0162C;
           box-shadow: 0 0 0 3.5px rgba(192,22,44,0.1);
         }
-
         .lp-input:focus + .lp-label,
         .lp-input:not(:placeholder-shown) + .lp-label {
           top: 9px;
@@ -271,7 +258,6 @@ setUserData(response.data.result)
           font-weight: 600;
           letter-spacing: 0.06em;
         }
-
         .lp-label {
           position: absolute;
           top: 50%;
@@ -285,14 +271,11 @@ setUserData(response.data.result)
           transform-origin: left center;
           white-space: nowrap;
         }
-
-        /* ── Forgot ── */
         .lp-meta {
           display: flex;
           justify-content: flex-end;
           margin-top: -0.6rem;
         }
-
         .lp-forgot {
           font-size: 0.78rem;
           color: #C0162C;
@@ -302,8 +285,6 @@ setUserData(response.data.result)
           transition: opacity 0.2s;
         }
         .lp-forgot:hover { opacity: 1; }
-
-        /* ── Submit ── */
         .lp-submit {
           position: relative;
           width: 100%;
@@ -322,7 +303,6 @@ setUserData(response.data.result)
           box-shadow: 0 4px 16px rgba(192,22,44,0.3);
           margin-top: 0.25rem;
         }
-
         .lp-submit::before {
           content: '';
           position: absolute;
@@ -330,30 +310,24 @@ setUserData(response.data.result)
           background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
           pointer-events: none;
         }
-
         .lp-submit:hover:not(:disabled) {
           background: #a01225;
           transform: translateY(-1px);
           box-shadow: 0 8px 24px rgba(192,22,44,0.38);
         }
-
         .lp-submit:active:not(:disabled) {
           transform: translateY(0);
         }
-
         .lp-submit:disabled {
           opacity: 0.6;
           cursor: not-allowed;
         }
-
         .lp-submit-inner {
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
         }
-
-        /* Spinner */
         .lp-spinner {
           width: 16px; height: 16px;
           border: 2px solid rgba(255,255,255,0.35);
@@ -362,37 +336,29 @@ setUserData(response.data.result)
           animation: spin 0.7s linear infinite;
           flex-shrink: 0;
         }
-
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ── Divider ── */
         .lp-divider {
           display: flex;
           align-items: center;
           gap: 0.75rem;
           margin: 0.25rem 0;
         }
-
         .lp-divider-line {
           flex: 1;
           height: 1px;
           background: rgba(0,0,0,0.08);
         }
-
         .lp-divider-text {
           font-size: 0.75rem;
           color: rgba(0,0,0,0.3);
           font-weight: 500;
           flex-shrink: 0;
         }
-
-        /* ── Sign up ── */
         .lp-signup-row {
           text-align: center;
           font-size: 0.85rem;
           color: rgba(0,0,0,0.45);
         }
-
         .lp-signup-row a {
           color: #C0162C;
           font-weight: 600;
@@ -400,8 +366,6 @@ setUserData(response.data.result)
           transition: opacity 0.2s;
         }
         .lp-signup-row a:hover { opacity: 0.75; }
-
-        /* ── Trust badges ── */
         .lp-trust {
           display: flex;
           justify-content: center;
@@ -410,7 +374,6 @@ setUserData(response.data.result)
           padding-top: 1.5rem;
           border-top: 1px solid rgba(0,0,0,0.07);
         }
-
         .lp-trust-item {
           display: flex;
           align-items: center;
@@ -419,7 +382,6 @@ setUserData(response.data.result)
           color: rgba(0,0,0,0.35);
           font-weight: 500;
         }
-
         .lp-trust-dot {
           width: 6px; height: 6px;
           border-radius: 50%;
@@ -427,7 +389,6 @@ setUserData(response.data.result)
           opacity: 0.5;
           flex-shrink: 0;
         }
-
         @media (max-width: 480px) {
           .lp-card { padding: 2rem 1.5rem; margin: 1rem; }
           .lp-heading { font-size: 1.7rem; }
@@ -435,7 +396,6 @@ setUserData(response.data.result)
       `}</style>
 
       <div className='lp-root'>
-        {/* Animated background */}
         <div className='lp-bg'>
           <div className='lp-bg-grid' />
           <div className='lp-bg-circle' />
@@ -444,10 +404,8 @@ setUserData(response.data.result)
           <div className='lp-bg-circle' />
         </div>
 
-        {/* Card */}
         <div className='lp-card'>
           <ToastContainer />
-          {/* Logo */}
           <div className='lp-logo-row'>
             <div className='lp-logo-badge'>S</div>
             <div className='lp-logo-text'>
@@ -456,13 +414,11 @@ setUserData(response.data.result)
             </div>
           </div>
 
-          {/* Heading */}
           <h1 className='lp-heading'>
             Welcome <span>back.</span>
           </h1>
           <p className='lp-sub'>Sign in to continue to your account</p>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className='lp-form'>
             {fields.map(field => (
               <div key={field.name} className='lp-field'>
@@ -509,7 +465,6 @@ setUserData(response.data.result)
             </div>
           </form>
 
-          {/* Trust row */}
           <div className='lp-trust'>
             <div className='lp-trust-item'>
               <div className='lp-trust-dot' />

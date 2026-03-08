@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import GetCampaignProvider from './Components/Context/User/Getcampaign.jsx'
 import  AuthProvider  from './Components/Context/User/UserData.jsx'
+import AdminProvider from './Components/Context/Admin/Summary.jsx'
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 
 const theme = createTheme({
@@ -20,9 +21,10 @@ createRoot(document.getElementById('root')).render(
       <CssBaseline />
       <BrowserRouter>
       <GetCampaignProvider>
-
         <AuthProvider>
+        <AdminProvider>
           <App />
+        </AdminProvider>
         </AuthProvider>
       </GetCampaignProvider>
       </BrowserRouter>

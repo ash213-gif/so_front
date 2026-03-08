@@ -1,6 +1,17 @@
-import React from 'react';
-import { FaTachometerAlt ,FaUsers,FaCalendarAlt, FaChartLine,FaDonate ,FaUser,FaHome , FaSignOutAlt, FaShieldAlt } from 'react-icons/fa';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React from 'react'
+import {
+  FaTachometerAlt,
+  FaUsers,
+  FaCalendarAlt,
+  FaChartLine,
+  FaDonate,
+  FaUser,
+  FaHome,
+  FaSignOutAlt,
+  FaShieldAlt
+} from 'react-icons/fa'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '../../../Context/User/UserData'
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -247,63 +258,98 @@ const styles = `
     color: #ff9090;
     font-family: 'Poppins', sans-serif;
   }
-`;
+`
 
 const navItems = [
-  { icon: <FaTachometerAlt />, label: 'Dashboard', badge: null, path: '/adminDashboard' },
-  { icon: <FaUsers />, label: 'Users', badge: '24', path: '/adminDashboard/users' },
-  { icon: <FaDonate />, label: 'Donations', badge: '5', path: '/adminDashboard/donations' },
-  { icon: <FaCalendarAlt />, label: 'Campaigns', badge: '5', path: '/adminDashboard/campaigns' },
-  { icon: <FaChartLine />, label: 'Analytics', badge: null, path: '/adminDashboard/analytics' },
-  { icon: <FaChartLine />, label: 'Analytics', badge: null, path: '/adminDashboard/profile' },
-];
+  {
+    icon: <FaTachometerAlt />,
+    label: 'Dashboard',
+    badge: null,
+    path: '/adminDashboard'
+  },
+  {
+    icon: <FaUsers />,
+    label: 'Users',
+    badge: '24',
+    path: '/adminDashboard/users'
+  },
+  
+  {
+    icon: <FaCalendarAlt />,
+    label: 'Campaigns',
+    badge: '5',
+    path: '/adminDashboard/campaigns'
+  },
+  {
+    icon: <FaChartLine />,
+    label: 'Analytics',
+    badge: null,
+    path: '/adminDashboard/analytics'
+  },
+  {
+    icon: <FaChartLine />,
+    label: 'Profile',
+    badge: null,
+    path: '/adminDashboard/profile'
+  }
+]
 
-export default function AdminSide() {
-  const navigate = useNavigate();
-  const location = useLocation();
+export default function AdminSide () {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { logout } = useAuth()
+
+  const handlelogout = (e) => {
+    e.preventDefault();
+    logout()
+  }
 
   return (
     <>
       <style>{styles}</style>
-      <aside className="admin-sidebar">
+      <aside className='admin-sidebar'>
         {/* Header */}
-        <div className="sidebar-header">
-          <div className="admin-avatar">
+        <div className='sidebar-header'>
+          <div className='admin-avatar'>
             <FaShieldAlt />
           </div>
-          <div className="admin-info">
+          <div className='admin-info'>
             <h2>Admin Panel</h2>
             <span>Super Administrator</span>
           </div>
         </div>
 
         {/* Nav */}
-        <nav className="sidebar-nav">
-          <div className="nav-label">Main Menu</div>
+        <nav className='sidebar-nav'>
+          <div className='nav-label'>Main Menu</div>
 
-          {navItems.map((item) => (
+          {navItems.map(item => (
             <button
               key={item.label}
-              className={`nav-item${location.pathname.startsWith(item.path) ? ' active' : ''}`}
+              className={`nav-item${
+                location.pathname.startsWith(item.path) ? ' active' : ''
+              }`}
               onClick={() => navigate(item.path)}
             >
-              <span className="nav-icon">{item.icon}</span>
-              <span className="nav-text">{item.label}</span>
-              {item.badge && <span className="nav-badge">{item.badge}</span>}
+              <span className='nav-icon'>{item.icon}</span>
+              <span className='nav-text'>{item.label}</span>
+              {item.badge && <span className='nav-badge'>{item.badge}</span>}
             </button>
           ))}
         </nav>
 
-        <div className="sidebar-divider" />
+        <div className='sidebar-divider' />
 
         {/* Logout */}
-        <div className="sidebar-footer">
-          <button className="logout-btn">
-            <span className="logout-icon"><FaSignOutAlt /></span>
-            <span className="logout-text">Logout</span>
+        <div className='sidebar-footer'>
+          <button onClick={handlelogout} className='logout-btn'>
+            <span className='logout-icon'>
+              <FaSignOutAlt />
+            </span>
+            <span className='logout-text'>Logout</span>
           </button>
         </div>
       </aside>
     </>
-  );
+  )
 }
