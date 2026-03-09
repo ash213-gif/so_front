@@ -52,7 +52,7 @@ const SignUp = () => {
     setloading(true)
     try {
       const response = await axios.post(`${BASE_URL}/signup`, formData,{
-		timeout: 30000
+		timeout: 40000
 	  })
       const data = response.data
 
