@@ -11,7 +11,6 @@ const Otpverify = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { id } = useParams()
-
   // IMPORTANT: destructure what AuthContext actually provides
   const { user } = useAuth()
 
@@ -45,7 +44,10 @@ const Otpverify = () => {
   const handleResend = async () => {
     try {
       toast.info('Resending OTP...')
-      await axios.post(`${BASE_URL}/resendotp/${id}`, { email })
+     const res= await axios.put(`${BASE_URL}/resendotp/${id}`, {
+        method:'POST'
+      })
+      console.log(res)
       toast.success('A new OTP has been sent to your email.')
     } catch (error) {
       const msg = error?.response?.data?.message || 'Failed to resend OTP.'

@@ -1,1 +1,1 @@
-export const BASE_URL = 'https://so-back.onrender.com'
+export const BASE_URL = "https://so-back.onrender.com" || "http://localhost:3030" ;
