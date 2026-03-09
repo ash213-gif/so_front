@@ -51,7 +51,9 @@ const SignUp = () => {
     e.preventDefault()
     setloading(true)
     try {
-      const response = await axios.post(`${BASE_URL}/signup`, formData)
+      const response = await axios.post(`${BASE_URL}/signup`, formData,{
+		timeout: 10000
+	  })
       const data = response.data
 
       if (data.result?._id) {
