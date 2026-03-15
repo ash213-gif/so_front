@@ -1,139 +1,246 @@
-import React, { useEffect, useState } from 'react';
-import './Home.css'; // Keep this for any external styles
-import Three from '../../Three.js/Three';
-import Sections from './Section';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import { BASE_URL } from "../../../GlobalUrl";
+import { useGetCampaign } from "../../Context/User/Getcampaign";
+import "react-toastify/dist/ReactToastify.css";
+import "./Home.css";
+import { useAuth } from "../../Context/User/UserData.jsx";
+import Three from '../../Three.js/Three'
+
+
 
 const Home = () => {
-  // useEffect(() => {
-  //   const css = `
-  //     .impact {
-  //       padding: 80px 10%;
-  //       text-align: center;
-  //       background: #fafafa;
-  //     }
-  //     .impact h2 {
-  //       font-size: 36px;
-  //       margin-bottom: 40px;
-  //     }
-  //     .impact-grid {
-  //       display: grid;
-  //       grid-template-columns: repeat(4, 1fr);
-  //       gap: 20px;
-  //     }
-  //     .impact-card {
-  //       background: white;
-  //       padding: 30px;
-  //       border-radius: 10px;
-  //       box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  //     }
-  //     .impact-card h3 {
-  //       color: #e63946;
-  //       font-size: 28px;
-  //     }
-  //     .help {
-  //       padding: 80px 10%;
-  //       text-align: center;
-  //     }
-  //     .help h2 {
-  //       font-size: 36px;
-  //       margin-bottom: 40px;
-  //     }
-  //     .help-grid {
-  //       display: grid;
-  //       grid-template-columns: repeat(3, 1fr);
-  //       gap: 20px;
-  //       max-width: 800px;
-  //       margin: 0 auto;
-  //     }
-  //     .help-grid > div {
-  //       padding: 30px;
-  //       background: white;
-  //       border-radius: 10px;
-  //       box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  //     }
-  //     .donate-cta {
-  //       padding: 80px 10%;
-  //       text-align: center;
-  //       background: linear-gradient(135deg, #e63946, #f77f00);
-  //       color: white;
-  //     }
-  //     .donate-cta h2 {
-  //       font-size: 36px;
-  //       margin-bottom: 20px;
-  //     }
-  //     .donate-cta p {
-  //       font-size: 20px;
-  //       margin-bottom: 30px;
-  //     }
-  //     .donate-cta button {
-  //       background: white;
-  //       color: #e63946;
-  //       border: none;
-  //       padding: 15px 40px;
-  //       font-size: 18px;
-  //       border-radius: 50px;
-  //       cursor: pointer;
-  //       font-weight: bold;
-  //     }
-  //     .donate-cta button:hover {
-  //       transform: scale(1.05);
-  //     }
-  //   `;
-  //   const style = document.createElement('style');
-  //   style.textContent = css;
-  //   document.head.appendChild(style);
+  const { user, token } = useAuth();
+  const { setgetcampaign, getcampaign } = useGetCampaign();
 
-  //   return () => {
-  //     document.head.removeChild(style);
-  //   };
-  // }, []);
+  const [loadingId, setLoadingId] = useState(null);
 
-  // const stats = [
-  //   { number: "10K+", label: "Children Helped" },
-  //   { number: "$2M+", label: "Funds Raised" },
-  //   { number: "50+", label: "Communities" },
-  //   { number: "500+", label: "Volunteers" },
-  // ];
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [donationAmount, setDonationAmount] = useState("");
+
+  // Load Razorpay script once
+  const loadRazorpayScript = () =>
+    new Promise((resolve) => {
+      if (document.getElementById("razorpay-js")) return resolve(true);
+      const script = document.createElement("script");
+      script.id = "razorpay-js";
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+
+  useEffect(() => {
+    loadRazorpayScript();
+  }, []);
+
+  // Handle Payment
+  const handlePayment = async (campaignId, amountInput) => {
+    if (!user || !token) {
+      toast.error("Please login to make a donation");
+      return;
+    }
+
+    const amount = Number(amountInput);
+
+    if (!amount || amount < 1) {
+      toast.error("Enter valid donation amount");
+      return;
+    }
+
+    setLoadingId(campaignId);
+
+    try {
+      const res = await fetch(`${BASE_URL}/auth/createdonation`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          amount,
+          donorId: user._id,
+          campaignId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.orderId) {
+        throw new Error(data.message || "Order creation failed");
+      }
+
+      const options = {
+        key: "rzp_test_SGkSK3FxBQMt3c", // Replace with your Razorpay Test Key
+        amount: data.amount,
+        currency: data.currency || "INR",
+        name: "Sharavan Donation",
+        description: "Donation Payment",
+        order_id: data.orderId,
+        handler: async function (rzpRes) {
+          await fetch(`${BASE_URL}/auth/verify`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              razorpay_order_id: rzpRes.razorpay_order_id,
+              razorpay_payment_id: rzpRes.razorpay_payment_id,
+              razorpay_signature: rzpRes.razorpay_signature,
+            }),
+          });
+
+          toast.success("Donation Successful ❤️");
+        },
+        prefill: {
+          name: user?.name || "",
+          email: user?.email || "",
+          contact: user?.phone || "",
+        },
+        theme: { color: "#dc2626" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  // Fetch Campaigns
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/getCampaigns`);
+        if (response.status === 200 && Array.isArray(response.data.data)) {
+          setgetcampaign(response.data.data);
+        } else {
+          toast.error("Unexpected campaigns response");
+        }
+      } catch (err) {
+        toast.error("Failed to load campaigns");
+      }
+    };
+
+    fetchCampaigns();
+  }, [setgetcampaign]);
 
   return (
     <>
-      <Three />
-      <Sections />
-      {/* <section className="impact">
-        <h2>Our Impact</h2>
-        <div className="impact-grid">
-          {stats.map((item, index) => (
-            <div key={index} className="impact-card">
-              <h3>{item.number}</h3>
-              <p>{item.label}</p>
+    
+        <div>
+          <Three />
+        </div>
+     
+      <ToastContainer />
+
+      <div className="home-container">
+        <h2 className="section-title">Featured Campaigns</h2>
+
+        <div className="campaign-grid">
+          {Array.isArray(getcampaign) &&
+            getcampaign.map((c) => (
+              <div className="campaign-card" key={c._id}>
+                <div className="card-image-wrapper">
+                  <img
+                    src={
+                      c.image ||
+                      "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&q=80&w=800"
+                    }
+                    alt={c.title}
+                    className="card-image"
+                  />
+                </div>
+
+                <div className="card-content">
+                  <h3 className="card-title">{c.title}</h3>
+                  <p className="card-desc">{c.description}</p>
+
+                  <div className="card-footer">
+                    <span className="card-location">📍 {c.location}</span>
+
+                    <button
+                      onClick={() => {
+                        setSelectedCampaign(c._id);
+                        setShowModal(true);
+                      }}
+                      className="donate-btn"
+                      disabled={loadingId === c._id}
+                    >
+                      {loadingId === c._id ? "Processing..." : "Donate"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+
+      {/* Donation Modal (Inline styles so CSS untouched) */}
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              padding: "20px",
+              borderRadius: "10px",
+              width: "300px",
+              textAlign: "center",
+            }}
+          >
+            <h3>Enter Donation Amount</h3>
+
+            <input
+              type="number"
+              placeholder="Enter amount in ₹"
+              value={donationAmount}
+              onChange={(e) => setDonationAmount(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px",
+                margin: "15px 0",
+              }}
+            />
+
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <button
+                onClick={() => {
+                  handlePayment(selectedCampaign, donationAmount);
+                  setShowModal(false);
+                  setDonationAmount("");
+                }}
+              >
+                Proceed
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  setDonationAmount("");
+                }}
+              >
+                Cancel
+              </button>
             </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="help">
-        <h2>How You Can Help</h2>
-        <div className="help-grid">
-          <div>
-            <h3>Donate</h3>
-            <p>Your donations provide food and education.</p>
-          </div>
-          <div>
-            <h3>Volunteer</h3>
-            <p>Join our community and help make a difference.</p>
-          </div>
-          <div>
-            <h3>Spread Awareness</h3>
-            <p>Share our mission with your friends.</p>
           </div>
         </div>
-      </section>
-
-      <section className="donate-cta">
-        <h2>Make a Difference Today</h2>
-        <p>Your small act of kindness can change a life.</p>
-        <button>Donate Now</button>
-      </section> */}
+      )}
     </>
   );
 };

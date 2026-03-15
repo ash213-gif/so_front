@@ -1,38 +1,52 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
+import { Paymenthook } from '../CustomHook/Paymenthook'
 
-const images = [ 
-  "/3d mode/coin_.png",
-  "/3d mode/box.png",
-  "/3d mode/coin_hand.png",
-  "/3d mode/hand_heart.png",
-  "/3d mode/teacher.png",
-  "/3d mode/donate_button.png",
-  "/3d mode/oy_hear.png",
-];
+const images = [
+  '/3d mode/coin_.png',
+  '/3d mode/box.png',
+  '/3d mode/coin_hand.png',
+  '/3d mode/hand_heart.png',
+  '/3d mode/teacher.png',
+  '/3d mode/donate_button.png',
+  '/3d mode/oy_hear.png'
+]
 
-export default function Three() {
-  const [current, setCurrent] = useState(0);
-  const [visible, setVisible] = useState(true);
+export default function Three () {
+  const [current, setCurrent] = useState(0)
+  const [visible, setVisible] = useState(true)
+  const {
+    handlePayment,
+    loadRazorpayScript,
+    loading,
+    setLoading,
+    amount,
+    setAmount
+  } = Paymenthook()
+
+  const [innput, setinput] = useState(false)
 
   useEffect(() => {
     const t = setInterval(() => {
-      setVisible(false);
+      setVisible(false)
       setTimeout(() => {
-        setCurrent(p => (p + 1) % images.length);
-        setVisible(true);
-      }, 400);
-    }, 2800);
-    return () => clearInterval(t);
-  }, []);
+        setCurrent(p => (p + 1) % images.length)
+        setVisible(true)
+      }, 400)
+    }, 2800)
+    return () => clearInterval(t)
+  }, [])
 
-  const jump = (i) => {
-    if (i === current) return;
-    setVisible(false);
-    setTimeout(() => { setCurrent(i); setVisible(true); }, 350);
-  };
+  const jump = i => {
+    if (i === current) return
+    setVisible(false)
+    setTimeout(() => {
+      setCurrent(i)
+      setVisible(true)
+    }, 350)
+  }
 
   return (
-    <div className="wrapper">
+    <div className='wrapper'>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -214,6 +228,22 @@ export default function Three() {
           margin-top: 5px;
         }
 
+        /* ── Input Field ── */
+        .inputf {
+          width: 100%;
+          padding: 12px 16px;
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          font-family: 'Inter', sans-serif;
+          font-size: 15px;
+          outline: none;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .inputf:focus {
+          border-color: #e80000;
+          box-shadow: 0 0 0 3px rgba(232,0,0,0.1);
+        }
+
         /* ── Buttons ── */
         .btn-row { display: flex; align-items: center; gap: 16px; }
 
@@ -317,99 +347,130 @@ export default function Three() {
       `}</style>
 
       {/* ── LEFT ── */}
-      <div className="left">
-
+      <div className='left'>
         {/* TOP: badge + headline — always visible first */}
-        <div className="left-top">
-          <div className="badge fu1">
-            <span className="badge-dot" />
+        <div className='left-top'>
+          <div className='badge fu1'>
+            <span className='badge-dot' />
             Charity Initiative
           </div>
 
-          <h2 className="headline fu2">
-            Small Acts of<br />
-            <em>Kindness</em> Change<br />
+          <h2 className='headline fu2'>
+            Small Acts of
+            <br />
+            <em>Kindness</em> Change
+            <br />
             the World
           </h2>
         </div>
 
         {/* IMAGE — on mobile renders here (between headline and rest) */}
-        <div className="right right-inline">
-          <div className="glow" />
+        <div className='right right-inline'>
+          <div className='glow' />
           <img
             key={current}
             src={images[current]}
-            alt=""
-            className={`${visible ? "img-enter floating" : "img-exit"}`}
+            alt=''
+            className={`${visible ? 'img-enter floating' : 'img-exit'}`}
             style={{
-              width: "min(320px, 88%)",
-              objectFit: "contain",
-              filter: "drop-shadow(0 26px 42px rgba(180,0,0,0.18))",
-              position: "relative",
-              zIndex: 1,
+              width: 'min(320px, 88%)',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 26px 42px rgba(180,0,0,0.18))',
+              position: 'relative',
+              zIndex: 1
             }}
           />
         </div>
 
         {/* BOTTOM: rest of article */}
-        <div className="left-bottom">
-          <div className="redline fu3" />
+        <div className='left-bottom'>
+          <div className='redline fu3' />
 
-          <p className="body-txt fu3">
-            Every donation, no matter the size, opens a door for a child in need.
-            Together we provide education, meals, and hope to over{" "}
-            <strong style={{ color: "#111" }}>10,000 children</strong> across
-            50 communities worldwide.
+          <p className='body-txt fu3'>
+            Every donation, no matter the size, opens a door for a child in
+            need. Together we provide education, meals, and hope to over{' '}
+            <strong style={{ color: '#111' }}>10,000 children</strong> across 50
+            communities worldwide.
           </p>
 
-          <div className="stats-row fu4">
-            {[["10K+","Children"],["$2M+","Raised"],["50+","Communities"]].map(([n,l]) => (
-              <div key={l} className="stat-card">
-                <div className="stat-num">{n}</div>
-                <div className="stat-lbl">{l}</div>
+          <div className='stats-row fu4'>
+            {[
+              ['10K+', 'Children'],
+              ['$2M+', 'Raised'],
+              ['50+', 'Communities']
+            ].map(([n, l]) => (
+              <div key={l} className='stat-card'>
+                <div className='stat-num'>{n}</div>
+                <div className='stat-lbl'>{l}</div>
               </div>
             ))}
           </div>
 
-          <blockquote className="bq fu5">
+          <blockquote className='bq fu5'>
             "No act of kindness, no matter how small, is ever wasted."
             <cite>— Aesop</cite>
           </blockquote>
 
-          <div className="btn-row fu5">
-            <button className="btn-donate">❤ Donate Now</button>
-            <button className="btn-ghost">Learn More →</button>
-          </div>
-          <div className="btn-row fu7">
-          </div>
+          {innput && (
+            <input
+            className='inputf'
+              value={amount}
+              onChange={e => {
+                setAmount(e.target.value)
+              }}
+              placeholder='Enter your amount'
+              type='number'
+            />
+          )}
 
-          <div className="dots fu6">
+          <div className='btn-row fu5'>
+            <button
+              onClick={async () => {
+                if (!innput) {
+                  setinput(true) // Pehle click pe input dikhao
+                } else {
+                  handlePayment()
+                  setinput(false) // Doosre click pe (jab amount bhar diya ho) payment karo
+                }
+              }}
+              className='btn-donate'
+              disabled={loading}
+            >
+              ❤ Donate Now
+            </button>
+            <button className='btn-ghost'>Learn More →</button>
+          </div>
+          <div className='btn-row fu7'></div>
+
+          <div className='dots fu6'>
             {images.map((_, i) => (
-              <button key={i} className={`dot ${i === current ? "active" : ""}`} onClick={() => jump(i)} />
+              <button
+                key={i}
+                className={`dot ${i === current ? 'active' : ''}`}
+                onClick={() => jump(i)}
+              />
             ))}
           </div>
         </div>
-
       </div>
 
       {/* ── RIGHT: desktop only ── */}
-      <div className="right right-desktop">
-        <div className="glow" />
+      <div className='right right-desktop'>
+        <div className='glow' />
         <img
-          key={current + "-d"}
+          key={current + '-d'}
           src={images[current]}
-          alt=""
-          className={`${visible ? "img-enter floating" : "img-exit"}`}
+          alt=''
+          className={`${visible ? 'img-enter floating' : 'img-exit'}`}
           style={{
-            width: "min(320px, 88%)",
-            objectFit: "contain",
-            filter: "drop-shadow(0 26px 42px rgba(180,0,0,0.18))",
-            position: "relative",
-            zIndex: 1,
+            width: 'min(320px, 88%)',
+            objectFit: 'contain',
+            filter: 'drop-shadow(0 26px 42px rgba(180,0,0,0.18))',
+            position: 'relative',
+            zIndex: 1
           }}
         />
       </div>
-
     </div>
-  );
+  )
 }

@@ -47,7 +47,6 @@ const Otpverify = () => {
      const res= await axios.put(`${BASE_URL}/resendotp/${id}`, {
         method:'POST'
       })
-      console.log(res)
       toast.success('A new OTP has been sent to your email.')
     } catch (error) {
       const msg = error?.response?.data?.message || 'Failed to resend OTP.'

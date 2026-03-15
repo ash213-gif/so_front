@@ -13,11 +13,11 @@ export function useAuth() {
   const [user, setUser] = useState(null);      // user details
   const [token, setToken] = useState(null);    // auth token
   const [loading, setLoading] = useState(true); // app start pe loading
-const [transaction, settransaction] = useState({
+  const [transaction, settransaction] = useState({
   totalAmount: 0,
   totalTimes: 0,
   history: []
-});
+  });
 
 
   useEffect(() => {

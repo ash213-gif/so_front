@@ -333,15 +333,10 @@ export default function NavBar() {
                 </div>
 
                 <div className="mobile-profile-links">
-                  <Link to="/profile" className="mobile-profile-link" onClick={closeMenu}>
+                  <Link to="/userDashboard" className="mobile-profile-link" onClick={closeMenu}>
                     <span>👤</span> My Profile
                   </Link>
-                  <Link to="/my-donations" className="mobile-profile-link" onClick={closeMenu}>
-                    <span>📋</span> My Donations
-                  </Link>
-                  <Link to="/settings" className="mobile-profile-link" onClick={closeMenu}>
-                    <span>⚙️</span> Settings
-                  </Link>
+                  
                   <button
                     className="mobile-logout-btn"
                     onClick={() => { logout(); closeMenu(); }}
