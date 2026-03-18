@@ -1,70 +1,92 @@
-import React, { useState, useEffect } from "react";
-import "../User/user.css";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../Components/Context/User/UserData";
-import { BASE_URL}from '../../../GlobalUrl'
-import axios from "axios";
-import { socket } from "../../../Socket";
+import React, { useEffect, useState } from 'react'
+import '../User/user.css'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../../Components/Context/User/UserData'
+import { BASE_URL } from '../../../GlobalUrl'
+import axios from 'axios'
+import { socket } from '../../../Socket'
 import { ToastContainer, toast } from 'react-toastify'
 
-import React from 'react'
+export default function Summary () {
+  const { user } = useAuth()
+  const id = user?._id
+  const [summ, setsumm] = useState({})
 
-export default function Summary() {
- useEffect(() => {
-  if (!id) return;
-
-  const fetchSummary = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/transactionsummary/${id}`);
-console.log(res)
-      summary(res.data);
-
-      setActivities(res.data?.history || []);
-      console.log(summary)
-    } catch (err) {
-      console.error(err);
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/transactionsummary/${id}`)
+        setsumm(res.data)
+      } catch (error) {
+        console.log(error)
+      }
     }
-  };
 
-  fetchSummary();
-
-}, [id]);
-
-
-useEffect(() => {
-
-  const handleTransaction = (data) => {
-    if (data.userId === id) {
-      setActivities((prev) => [data, ...(prev || [])]);
+    if (id) {
+      fetchSummary()
     }
-  };
+  }, [id])
 
-  socket.on("transactionUpdated", handleTransaction);
+return (
+  <div className="summary-page">
 
-  return () => {
-    socket.off("transactionUpdated", handleTransaction);
-  };
+    {/* Red Banner */}
+    <div className="summary-banner">
+      <p className="banner-label">Your Impact</p>
+      <h1 className="banner-title">Donation Summary</h1>
+      <p className="banner-sub">A record of your generosity</p>
+    </div>
 
-}, [id]);
+    <div className="summary-container">
 
-  return (
-    <>
+      {/* Stat Cards */}
+      <div className="summary-stats">
+        <div className="stat-card">
+          <div className="stat-icon">🤝</div>
+          <div className="stat-label">Times Donated</div>
+          <div className="stat-value">{summ?.totalTimes ?? 0}</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">💛</div>
+          <div className="stat-label">Total Donated</div>
+          <div className="stat-value">
+            <span className="currency">₹</span>
+            {summ.totalAmount ?? 0}
+          </div>
+        </div>
+      </div>
 
-
-         <div className="prof-section-body">
-                  <div className="prof-activity-list">
-                    {activities.map((a, i) => (
-                      <div className="prof-activity-item" key={i}>
-                        <span className={`prof-act-dot ${a.amount}`} />
-                        <div className="prof-act-info">
-                          <span> amount: {a.amount}</span>
-                          <strong>{a.transactionId}</strong>
-                        </div>
-                        <span className="prof-act-time">{a.updatedAt}</span>
-                      </div>
-                    ))}
-                  </div>
+      {/* History */}
+      <div className="summary-history">
+        <div className="history-header">
+          <h3>Transaction History</h3>
+          <span className="history-badge">{summ?.history?.length ?? 0} donations</span>
+        </div>
+        <div className="history-list">
+          {summ?.history?.length > 0 ? (
+            summ.history.map((item, index) => (
+              <div key={item._id || index} className="history-item">
+                <div className="history-item-left">
+                  <div className="history-dot" />
+                  <span className="history-index">Donation #{index + 1}</span>
                 </div>
-    </>
-  )
+                  <span className="history-index">{item.transactionId}</span>
+                <span className="history-amount">
+                  <span className="rupee">₹</span>{item.amount}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="history-empty">
+              <span className="empty-icon">📭</span>
+              No donations yet
+            </div>
+          )}
+        </div>
+      </div>
+
+    </div>
+    <ToastContainer />
+  </div>
+)
 }
