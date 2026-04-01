@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import Login from './Components/AuthRegister/Login'
 import SignUp from './Components/AuthRegister/SignUp'
 import Home from './Components/Home/Both/Home'
@@ -23,6 +22,7 @@ import Profile from './Components/Home/User/Profile'
 import Notification from './Components/Home/User/Notification'
 import Setting from './Components/Home/User/Setting'
 import Summary from './Components/Home/User/Summary'
+
 
 function App () {
   return (
