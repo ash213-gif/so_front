@@ -295,3 +295,266 @@
         .mobile-btn-login:hover { background: var(--off-white); border-color: rgba(0,0,0,0.2); }
         .mobile-btn-signup:hover { background: var(--crimson-dark); }
       
+
+        /* Avatar button (desktop) */
+.avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--off-white);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-main);
+  gap: 0.35rem;
+  transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.avatar-btn:hover {
+  background: #f1f1f1;
+  border-color: rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.avatar-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--crimson);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.avatar-name {
+  max-width: 110px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-main);
+}
+
+/* Wrapper to position popup relative to avatar */
+.profile-popup-wrap {
+  position: relative;
+}
+
+/* Popup container */
+.profile-popup {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 240px;
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow:
+    0 12px 30px rgba(15, 23, 42, 0.18),
+    0 0 0 1px rgba(15, 23, 42, 0.06);
+  padding: 0.75rem 0.9rem 0.65rem;
+  z-index: 1200;
+}
+
+/* Small arrow */
+.profile-popup::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 22px;
+  width: 12px;
+  height: 12px;
+  background: var(--white);
+  transform: rotate(45deg);
+  box-shadow: -1px -1px 1px rgba(15, 23, 42, 0.06);
+}
+
+/* Header inside popup */
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.5rem;
+}
+
+.popup-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: var(--crimson);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.popup-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.popup-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.popup-email {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Divider */
+.popup-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.2rem 0 0.4rem;
+}
+
+/* Menu links */
+.popup-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.1rem 0;
+}
+
+.popup-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 0.86rem;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.popup-item:hover {
+  background: var(--off-white);
+}
+
+/* Icons */
+.popup-item-icon {
+  font-size: 1rem;
+}
+
+/* Logout button */
+.popup-logout {
+  width: 100%;
+  margin-top: 0.2rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: 8px;
+  border: none;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.popup-logout:hover {
+  background: #fee2e2;
+}
+
+/* Mobile avatar area */
+.mobile-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.2rem 0.3rem;
+}
+
+.mobile-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--crimson);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.mobile-avatar-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-avatar-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.mobile-avatar-email {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Mobile profile links */
+.mobile-profile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-top: 0.3rem;
+}
+
+.mobile-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.3rem;
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  border-radius: 6px;
+  transition: background 0.18s ease;
+}
+
+.mobile-profile-link:hover {
+  background: var(--off-white);
+}
+
+.mobile-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.3rem;
+  border-radius: 6px;
+  border: none;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.mobile-logout-btn:hover {
+  background: #fee2e2;
+}
+
+/* Ensure popup only shows on desktop navbar (already hidden on mobile via .navbar-cta) */
+@media (max-width: 768px) {
+  .profile-popup {
+    display: none;
+  }
+}

@@ -78,7 +78,10 @@ export default function NavBar() {
 
   const navLinks = ["About", "Campaigns", "Donate"];
 
-  const showNavbar = !user || user?.role === "user";
+  // Show navbar only when auth is loaded and user is not admin
+const showNavbar = token && user?.role === "user";
+if (!showNavbar) return null;
+
   const closeMenu = () => setIsOpen(false);
 
   if (!showNavbar) return null;
