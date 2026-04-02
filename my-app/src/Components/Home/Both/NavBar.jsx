@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import  { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../Context/User/UserData";
 import "./Navbar.css";
@@ -38,7 +38,6 @@ function ProfilePopup({ user, logout, onClose }) {
         <Link to="/userDashboard" className="popup-item" onClick={onClose}>
           <span className="popup-item-icon">👤</span> My Profile
         </Link>
-      
       </div>
 
       <div className="popup-divider" />
@@ -78,18 +77,16 @@ export default function NavBar() {
 
   const navLinks = ["About", "Campaigns", "Donate"];
 
-  // Show navbar only when auth is loaded and user is not admin
-const showNavbar = token && user?.role === "user";
-if (!showNavbar) return null;
+  // ✅ FIXED: Show navbar ALWAYS except for admin users
+  // Debug: console.log('Navbar - user:', user, 'role:', user?.role);
+  const showNavbar = !user?.role || user.role !== "admin";
+
+  if (!showNavbar) return null;  // Hide only for admins
 
   const closeMenu = () => setIsOpen(false);
 
-  if (!showNavbar) return null;
-
   return (
     <>
-     
-
       <nav className="navbar-root" role="navigation" aria-label="Main navigation">
         <div className="navbar-inner">
 
